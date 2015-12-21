@@ -1,0 +1,36 @@
+---
+- hosts: all
+  gather_facts: True
+  tasks:
+    - name: Update OS
+      command: apt-get update
+
+    - name: Install MySQL
+      apt: name=mysql-server state=installed
+
+    - name: Install Apt Pip
+      apt: name=python-pip state=installed
+
+    - name: Install Pip
+      command: pip install -U pip
+
+    - name: Install python-dev
+      apt: name=python-dev state=installed
+
+    - name: Install Virtualenv
+      command: pip install virtualenv
+
+    - name: Install Virtualenvwrapper
+      command: pip install virtualenvwrapper
+
+    - name: Install Python-MySQL Dependencies
+      apt: name=libmysqlclient-dev state=installed
+
+    - name: Install MySQL-python
+      apt: name=python-mysqldb state=installed
+
+    - name: Ensure MySQL is running
+      service: name=mysql state=started enabled=true
+
+    - name: Ensure MySQL starts on boot
+      command: update-rc.d mysql defaults 
