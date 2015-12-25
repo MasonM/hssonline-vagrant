@@ -23,6 +23,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 			ansible.sudo = true
 		end	
 
-		django_config.vm.synced_folder '/home/masonm/src/hss', '/var/www/hss'
+		django_config.vm.synced_folder '/home/masonm/src/hss', '/var/www/hss', type: "nfs"
 	end
 end
