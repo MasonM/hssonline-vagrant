@@ -3,7 +3,7 @@
   gather_facts: True
   tasks:
     - name: Update OS
-      command: apt-get update
+      apt: upgrade=dist
 
     - name: Install MySQL
       apt: name=mysql-server state=installed
@@ -11,17 +11,23 @@
     - name: Install Apt Pip
       apt: name=python-pip state=installed
 
-    - name: Install Pip
-      command: pip install -U pip
-
     - name: Install python-dev
       apt: name=python-dev state=installed
 
+    - name: Install Pip
+      pip: name=pip state=latest
+
     - name: Install Virtualenv
-      command: pip install virtualenv
+      pip: name=virtualenv
 
     - name: Install Virtualenvwrapper
-      command: pip install virtualenvwrapper
+      pip: name=virtualenvwrapper
+
+    - name: Activate virtualenv on login
+      command: echo 'source /var/www/hss/env/bin/activate' > /home/vagrant/.bash_profile
+
+    - name: Add 'hss' symlink to vagrant homedir
+      file: src=/var/www/hss dest=/home/vagrant/hss state=link
 
     - name: Install Python-MySQL Dependencies
       apt: name=libmysqlclient-dev state=installed
@@ -32,5 +38,17 @@
     - name: Ensure MySQL is running
       service: name=mysql state=started enabled=true
 
-    - name: Ensure MySQL starts on boot
-      command: update-rc.d mysql defaults 
+    - name: Add hssonline MySQL DB
+      mysql_db: name=hssonline state=present
+
+    - name: Add hssweb_temp MySQL DB
+      mysql_db: name=hssweb_temp state=present
+
+    - name: Add conferenceUser MySQL user
+      mysql_user: name=conferenceUser password=conferencePass priv=conference.*:ALL/test_conference.*:ALL
+
+    - name: Add electionUser MySQL user
+      mysql_user: name=electionUser password=electionPass priv=election.*:ALL/test_election.*:ALL
+
+    - name: Add electionUser MySQL user
+      mysql_user: name=hssonline priv=hssonline.*:ALL/hssweb_unittests.*:ALL/hssweb_temp.*:ALL
