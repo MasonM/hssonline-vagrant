@@ -44,6 +44,12 @@
     - name: Add hssweb_temp MySQL DB
       mysql_db: name=hssweb_temp state=present
 
+    - name: Add conference MySQL DB
+      mysql_db: name=conference state=present
+
+    - name: Add election MySQL DB
+      mysql_db: name=election state=present
+
     - name: Add conferenceUser MySQL user
       mysql_user: name=conferenceUser password=conferencePass priv=conference.*:ALL/test_conference.*:ALL
 
