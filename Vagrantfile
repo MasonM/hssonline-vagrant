@@ -9,7 +9,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 	config.vm.define :django do |django_config|
 		django_config.vm.network :private_network, ip: "192.168.3.3"
-		django_config.vm.network "forwarded_port", guest: 3306, host: 3306
+		#django_config.vm.network "forwarded_port", guest: 3306, host: 3306
 		django_config.vm.network "forwarded_port", guest: 80, host: 8080
 		django_config.vm.network "forwarded_port", guest: 8000, host: 8001
 
