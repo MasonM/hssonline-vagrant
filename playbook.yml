@@ -29,10 +29,10 @@
       pip: name=virtualenv
 
     - name: Install hssonline requirements to a virtualenv directory named "env"
-      pip: requirements={{hss_root}}/newhssonline/requirements.txt virtualenv={{hss_root}}/env
+      pip: requirements={{hss_root}}/newhssonline/requirements.txt virtualenv={{hss_root}}/env virtualenv_site_packages=yes
 
     - name: Activate virtualenv on login
-      command: echo 'source {{hss_root}}/env/bin/activate' > /home/vagrant/.bash_profile
+      copy: content="source {{hss_root}}/env/bin/activate" dest=/home/vagrant/.bash_profile owner=vagrant group=vagrant
 
     - name: Ensure MySQL is running
       service: name=mysql state=started enabled=true
