@@ -1,6 +1,8 @@
 ---
 - hosts: all
   gather_facts: True
+  vars:
+      hss_root: '/home/vagrant/hss'
   tasks:
     - name: Update OS
       apt: upgrade=dist
@@ -14,50 +16,34 @@
     - name: Install python-dev
       apt: name=python-dev state=installed
 
+    - name: Install Python-MySQL dependency
+      apt: name=libmysqlclient-dev state=installed
+
+    - name: Install MySQL-python (needed by Ansible)
+      apt: name=python-mysqldb state=installed
+
     - name: Install Pip
       pip: name=pip state=latest
-
-    - name: Install IPython
-      pip: name=ipython
 
     - name: Install Virtualenv
       pip: name=virtualenv
 
-    - name: Install Virtualenvwrapper
-      pip: name=virtualenvwrapper
+    - name: Install hssonline requirements to a virtualenv directory named "env"
+      pip: requirements={{hss_root}}/newhssonline/requirements.txt virtualenv={{hss_root}}/env
 
     - name: Activate virtualenv on login
-      command: echo 'source /var/www/hss/env/bin/activate' > /home/vagrant/.bash_profile
-
-    - name: Add 'hss' symlink to vagrant homedir
-      file: src=/var/www/hss dest=/home/vagrant/hss state=link
-
-    - name: Install Python-MySQL Dependencies
-      apt: name=libmysqlclient-dev state=installed
-
-    - name: Install MySQL-python
-      apt: name=python-mysqldb state=installed
+      command: echo 'source {{hss_root}}/env/bin/activate' > /home/vagrant/.bash_profile
 
     - name: Ensure MySQL is running
       service: name=mysql state=started enabled=true
 
-    - name: Add hssonline MySQL DB
-      mysql_db: name=hssonline state=present
+    - name: Add MySQL DBs
+      mysql_db: name={{ item }} state=present
+      with_items: ['hssonline', 'test_hssonline', 'conference', 'election']
 
-    - name: Add hssweb_temp MySQL DB
-      mysql_db: name=hssweb_temp state=present
-
-    - name: Add conference MySQL DB
-      mysql_db: name=conference state=present
-
-    - name: Add election MySQL DB
-      mysql_db: name=election state=present
-
-    - name: Add conferenceUser MySQL user
-      mysql_user: name=conferenceUser password=conferencePass priv=conference.*:ALL/test_conference.*:ALL
-
-    - name: Add electionUser MySQL user
-      mysql_user: name=electionUser password=electionPass priv=election.*:ALL/test_election.*:ALL
-
-    - name: Add electionUser MySQL user
-      mysql_user: name=hssonline priv=hssonline.*:ALL/hssweb_unittests.*:ALL/hssweb_temp.*:ALL
+    - name: Add MySQL users
+      mysql_user: name={{ item.name }} password={{ item.password }} priv={{ item.db }}.*:ALL/test_{{ item.db }}.*:ALL
+      with_items:
+          - { name: 'hssonline', db: 'hssonline', password: 'foo' }
+          - { name: 'conferenceUser', db: 'conference', password: 'conferencePass' }
+          - { name: 'electionUser', db: 'election', password: 'electionPass' }
