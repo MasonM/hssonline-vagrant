@@ -30,7 +30,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 			ansible.install = true
 			ansible.playbook = "playbook.yml"
 			ansible.verbose = "vv"
-			ansible.sudo = true
 		end	
 
 		hss_config.vm.synced_folder hss_src_root, '/home/vagrant/hss'

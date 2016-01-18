@@ -6,27 +6,34 @@
   tasks:
     - name: Update OS
       apt: upgrade=dist
+      become: yes
 
     - name: Install MySQL
       apt: name=mysql-server state=installed
+      become: yes
 
     - name: Install Apt Pip
       apt: name=python-pip state=installed
+      become: yes
 
     - name: Install python-dev
       apt: name=python-dev state=installed
+      become: yes
 
     - name: Install Python-MySQL dependency
       apt: name=libmysqlclient-dev state=installed
+      become: yes
 
     - name: Install MySQL-python (needed by Ansible)
       apt: name=python-mysqldb state=installed
 
     - name: Install Pip
       pip: name=pip state=latest
+      become: yes
 
     - name: Install Virtualenv
       pip: name=virtualenv
+      become: yes
 
     - name: Install hssonline requirements to a virtualenv directory named "env"
       pip: requirements={{hss_root}}/newhssonline/requirements.txt virtualenv={{hss_root}}/env virtualenv_site_packages=yes
@@ -36,13 +43,16 @@
 
     - name: Ensure MySQL is running
       service: name=mysql state=started enabled=true
+      become: yes
 
     - name: Add MySQL DBs
       mysql_db: name={{ item }} state=present
+      become: yes
       with_items: ['hssonline', 'test_hssonline', 'conference', 'election']
 
     - name: Add MySQL users
       mysql_user: name={{ item.name }} password={{ item.password }} priv={{ item.db }}.*:ALL/test_{{ item.db }}.*:ALL
+      become: yes
       with_items:
           - { name: 'hssonline', db: 'hssonline', password: 'foo' }
           - { name: 'conferenceUser', db: 'conference', password: 'conferencePass' }
