@@ -4,65 +4,47 @@
   vars:
       hss_root: '/home/vagrant/hss'
       virtualenv_root: '/home/vagrant/env'
+      ssh_known_hosts_command: "ssh-keyscan -H -T 10"
+      ssh_known_hosts_file: "/etc/ssh/ssh_known_hosts"
+      ssh_known_hosts:
+          - bitbucket.org
+          - github.com
   tasks:
     - name: Update OS
       apt: upgrade=dist
       become: yes
 
-    - name: Install MySQL
-      apt: name=mysql-server state=installed
+    - name: Install necessary packages via apt
+      apt: name={{item}} state=installed
       become: yes
-
-    - name: Install Apt Pip
-      apt: name=python-pip state=installed
-      become: yes
-
-    - name: Install python-dev
-      apt: name=python-dev state=installed
-      become: yes
-
-    - name: Install Python-MySQL dependency
-      apt: name=libmysqlclient-dev state=installed
-      become: yes
-
-    - name: Install MySQL-python (needed by Ansible)
-      apt: name=python-mysqldb state=installed
-      become: yes
-
-    - name: Install Mercurial
-      apt: name=mercurial
-      become: yes
-
-    - name: Install Git
-      apt: name=git
-      become: yes
-
-    - name: Tell Mercurial to trust the vagrant user
-      copy: content="[trusted]\nusers = vagrant,root\n" dest=/etc/mercurial/hgrc
-      become: yes
-
-    - name: Install Pip
-      pip: name=pip state=latest
-      become: yes
-
-    - name: Install Virtualenv
-      pip: name=virtualenv
-      become: yes
+      with_items:
+          - mysql-server
+          - python-pip
+          - python-dev
+          - libmysqlclient-dev
+          - python-mysqldb # need by Ansible
+          - mercurial
+          - git # needed for the tinymce subrepository in newhssonline
+          - python-virtualenv
 
     # Fix SSH issues when cloning repos (taken from https://juriansluiman.nl/article/151/managing-ssh-known-hosts-with-ansible)
     - name: Make sure the known hosts file exists
       file: path={{ ssh_known_hosts_file }} state=touch
-
+      become: yes
     - name: Check host name availability
       shell: "ssh-keygen -f {{ ssh_known_hosts_file }} -F {{ item }}"
       with_items: ssh_known_hosts
       register: ssh_known_host_results
       ignore_errors: yes
-
     - name: Scan the public key
       shell: "{{ ssh_known_hosts_command}} {{ item.item }} >> {{ ssh_known_hosts_file }}"
+      become: yes
       with_items: ssh_known_host_results.results
       when: item.stdout == ""
+
+    - name: Tell Mercurial to trust the vagrant user
+      copy: content="[trusted]\nusers = vagrant\n" dest=/etc/mercurial/hgrc
+      become: yes
 
     - name: Clone HSS repositories, if not already present
       hg: repo={{item}} force=no dest={{hss_root}}/{{item | basename}}
