@@ -17,6 +17,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 			vb.customize ["modifyvm", :id, "--memory", "2048"]
 		end
 
+		# Patch for https://github.com/mitchellh/vagrant/issues/6793
+		hss_config.vm.provision "shell" do |s|
+			s.inline = '[[ ! -f $1 ]] || grep -F -q "$2" $1 || sed -i "/__main__/a \\    $2" $1'
+			s.args = ['/usr/bin/ansible-galaxy', "if sys.argv == ['/usr/bin/ansible-galaxy', '--help']: sys.argv.insert(1, 'info')"]
+		end
+
 		hss_config.vm.provision "ansible_local" do |ansible|
 			ansible.install = true
 			ansible.playbook = "playbook.yml"
