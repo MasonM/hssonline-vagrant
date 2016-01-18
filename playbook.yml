@@ -27,6 +27,19 @@
 
     - name: Install MySQL-python (needed by Ansible)
       apt: name=python-mysqldb state=installed
+      become: yes
+
+    - name: Install Mercurial
+      apt: name=mercurial
+      become: yes
+
+    - name: Install Git
+      apt: name=git
+      become: yes
+
+    - name: Tell Mercurial to trust the vagrant user
+      copy: content="[trusted]\nusers = vagrant,root\n" dest=/etc/mercurial/hgrc
+      become: yes
 
     - name: Install Pip
       pip: name=pip state=latest
@@ -35,6 +48,28 @@
     - name: Install Virtualenv
       pip: name=virtualenv
       become: yes
+
+    # Fix SSH issues when cloning repos (taken from https://juriansluiman.nl/article/151/managing-ssh-known-hosts-with-ansible)
+    - name: Make sure the known hosts file exists
+      file: path={{ ssh_known_hosts_file }} state=touch
+
+    - name: Check host name availability
+      shell: "ssh-keygen -f {{ ssh_known_hosts_file }} -F {{ item }}"
+      with_items: ssh_known_hosts
+      register: ssh_known_host_results
+      ignore_errors: yes
+
+    - name: Scan the public key
+      shell: "{{ ssh_known_hosts_command}} {{ item.item }} >> {{ ssh_known_hosts_file }}"
+      with_items: ssh_known_host_results.results
+      when: item.stdout == ""
+
+    - name: Clone HSS repositories, if not already present
+      hg: repo={{item}} force=no dest={{hss_root}}/{{item | basename}}
+      with_items:
+          - ssh://hg@bitbucket.org/hssonline/newhssonline
+          - ssh://hg@bitbucket.org/hssonline/django-conference
+          - ssh://hg@bitbucket.org/hssonline/django-elect
 
     - name: Install hssonline requirements to the virtualenv root
       pip: requirements={{hss_root}}/newhssonline/requirements.txt virtualenv={{virtualenv_root}} virtualenv_site_packages=yes
