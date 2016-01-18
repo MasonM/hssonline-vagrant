@@ -22,7 +22,7 @@
           - python-pip
           - python-dev
           - libmysqlclient-dev
-          - python-mysqldb # need by Ansible
+          - python-mysqldb # needed by Ansible
           - mercurial
           - git # needed for the tinymce subrepository in newhssonline
           - python-virtualenv
@@ -55,6 +55,10 @@
 
     - name: Install hssonline requirements to the virtualenv root
       pip: requirements={{hss_root}}/newhssonline/requirements.txt virtualenv={{virtualenv_root}} virtualenv_site_packages=yes
+
+    - name: Install django-conference and django-elect to the virtualenv root in editable mode
+      pip: name={{hss_root}}/{{item}} extra_args=-e virtualenv={{virtualenv_root}}
+      with_items: ['django-conference', 'django-elect']
 
     - name: Activate virtualenv on login
       copy: content="source {{virtualenv_root}}/bin/activate" dest=/home/vagrant/.bash_profile owner=vagrant group=vagrant
