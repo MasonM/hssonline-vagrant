@@ -4,6 +4,9 @@
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
+# Assume the parent directory should contain all the repos
+hss_src_root = File.dirname(File.dirname(__FILE__))
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	config.vm.box = "ubuntu/trusty64"
 
@@ -30,6 +33,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 			ansible.sudo = true
 		end	
 
-		hss_config.vm.synced_folder '/home/masonm/src/hss', '/home/vagrant/hss'
+		hss_config.vm.synced_folder hss_src_root, '/home/vagrant/hss'
 	end
 end
