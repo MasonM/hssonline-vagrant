@@ -3,6 +3,7 @@
   gather_facts: True
   vars:
       hss_root: '/home/vagrant/hss'
+      virtualenv_root: '/home/vagrant/env'
   tasks:
     - name: Update OS
       apt: upgrade=dist
@@ -35,11 +36,11 @@
       pip: name=virtualenv
       become: yes
 
-    - name: Install hssonline requirements to a virtualenv directory named "env"
-      pip: requirements={{hss_root}}/newhssonline/requirements.txt virtualenv={{hss_root}}/env virtualenv_site_packages=yes
+    - name: Install hssonline requirements to the virtualenv root
+      pip: requirements={{hss_root}}/newhssonline/requirements.txt virtualenv={{virtualenv_root}} virtualenv_site_packages=yes
 
     - name: Activate virtualenv on login
-      copy: content="source {{hss_root}}/env/bin/activate" dest=/home/vagrant/.bash_profile owner=vagrant group=vagrant
+      copy: content="source {{virtualenv_root}}/bin/activate" dest=/home/vagrant/.bash_profile owner=vagrant group=vagrant
 
     - name: Ensure MySQL is running
       service: name=mysql state=started enabled=true
