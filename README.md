@@ -13,4 +13,6 @@ This repository contains code for creating a virtual machine using [Vagrant](htt
 
 Once it's finished, you should be able to run the tests using the `./run_tests.sh` script and have everything pass.
 
-To browse the site, run `./run_server.sh` to start the Django webserver. You should now be able to access it in your browser at `https://localhost:8000`. The site will run in DEBUG mode. Note that it won't be very usable unless you populate the database. You can do that by downloading a dump of the SQL database to the `hssonline_vagrant` folder and loading it with `vagrant ssh hss -c 'sudo mysql hssonline < /vagrant/DUMPFILENAME.sql'`. Keep in mind the dump contains semi-sensitive information, so take care to delete it and wipe the hssonline DB when you're done.
+To browse the site, run `./run_server.sh` to start the Django webserver. You should now be able to access it in your browser at `https://localhost:8000`. The site will run in DEBUG mode.
+
+In order to populate the DB with a dump, place the .sql file in the `hssonline_vagrant` folder and load it with `vagrant ssh hss -c 'sudo mysql hssonline < /vagrant/DUMPFILENAME.sql'`.
