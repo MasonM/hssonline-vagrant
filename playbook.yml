@@ -53,12 +53,12 @@
           - ssh://hg@bitbucket.org/hssonline/django-conference
           - ssh://hg@bitbucket.org/hssonline/django-elect
 
-    - name: Install hssonline requirements to the virtualenv root
-      pip: requirements={{hss_root}}/newhssonline/requirements.txt virtualenv={{virtualenv_root}} virtualenv_site_packages=yes
-
     - name: Install django-conference and django-elect to the virtualenv root in editable mode
-      pip: name={{hss_root}}/{{item}} extra_args=-e virtualenv={{virtualenv_root}}
+      pip: name={{hss_root}}/{{item}} extra_args=-e virtualenv={{virtualenv_root}} virtualenv_site_packages=yes
       with_items: ['django-conference', 'django-elect']
+
+    - name: Install hssonline requirements to the virtualenv root
+      pip: requirements={{hss_root}}/newhssonline/requirements.txt virtualenv={{virtualenv_root}}
 
     - name: Activate virtualenv on login
       copy: content="source {{virtualenv_root}}/bin/activate" dest=/home/vagrant/.bash_profile owner=vagrant group=vagrant
