@@ -63,6 +63,10 @@
     - name: Activate virtualenv on login
       copy: content="source {{virtualenv_root}}/bin/activate" dest=/home/vagrant/.bash_profile owner=vagrant group=vagrant
 
+    - name: Set default storage engine to MyISAM
+      mysql_variables: variable=default_storage_engine value=MyISAM
+      become: yes
+
     - name: Ensure MySQL is running
       service: name=mysql state=started enabled=true
       become: yes
