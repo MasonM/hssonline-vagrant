@@ -47,7 +47,7 @@
       become: yes
 
     - name: Clone HSS repositories, if not already present
-      hg: repo={{item}} force=no dest={{hss_root}}/{{item | basename}}
+      hg: repo={{item}} force=no update=no dest={{hss_root}}/{{item | basename}}
       with_items:
           - ssh://hg@bitbucket.org/hssonline/newhssonline
           - ssh://hg@bitbucket.org/hssonline/django-conference
