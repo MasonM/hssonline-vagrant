@@ -74,7 +74,7 @@
     - name: Add MySQL DBs
       mysql_db: name={{ item }} state=present
       become: yes
-      with_items: ['hssonline', 'test_hssonline', 'conference', 'election']
+      with_items: ['hssonline', 'conference', 'election']
 
     - name: Add MySQL users
       mysql_user: name={{ item.name }} password={{ item.password }} priv={{ item.db }}.*:ALL/test_{{ item.db }}.*:ALL
