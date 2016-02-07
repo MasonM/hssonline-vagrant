@@ -61,7 +61,7 @@
       pip: requirements={{hss_root}}/newhssonline/requirements.txt virtualenv={{virtualenv_root}}
 
     - name: Activate virtualenv on login
-      copy: content="source {{virtualenv_root}}/bin/activate" dest=/home/vagrant/.bash_profile owner=vagrant group=vagrant
+      copy: content="source {{virtualenv_root}}/bin/activate\nexport force_color_prompt=yes\nsource ~/.bashrc\n" dest=/home/vagrant/.bash_profile owner=vagrant group=vagrant
 
     - name: Set default storage engine to MyISAM
       mysql_variables: variable=default_storage_engine value=MyISAM
