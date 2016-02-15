@@ -80,6 +80,7 @@
       mysql_user: name={{ item.name }} password={{ item.password }} priv={{ item.db }}.*:ALL/test_{{ item.db }}.*:ALL
       become: yes
       with_items:
+          - { name: 'sql_explorer', db: 'hssonline', password: 'foo' }
           - { name: 'hssonline', db: 'hssonline', password: 'foo' }
           - { name: 'conferenceUser', db: 'conference', password: 'conferencePass' }
           - { name: 'electionUser', db: 'election', password: 'electionPass' }
