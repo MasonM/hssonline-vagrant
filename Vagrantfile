@@ -12,7 +12,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 	config.vm.define :hss do |hss_config|
 		hss_config.vm.network :private_network, ip: "192.168.3.3"
-		#hss_config.vm.network "forwarded_port", guest: 3306, host: 3306
+		hss_config.vm.network "forwarded_port", guest: 3306, host: 3306
 		hss_config.vm.network "forwarded_port", guest: 8000, host: 8000
 
 		# This is so Ansible can clone the HSS repos using the key on the host
