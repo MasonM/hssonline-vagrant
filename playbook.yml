@@ -67,6 +67,10 @@
       mysql_variables: variable=default_storage_engine value=MyISAM
       become: yes
 
+    - name: Make MySQL listen on all addresses so it can be accessed from the host
+      lineinfile: dest=/etc/mysql/my.cnf regexp="^bind-address" line="bind-address=0.0.0.0"      
+      become: yes
+
     - name: Ensure MySQL is running
       service: name=mysql state=started enabled=true
       become: yes
