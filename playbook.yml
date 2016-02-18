@@ -81,7 +81,7 @@
       with_items: ['hssonline', 'conference', 'election']
 
     - name: Add MySQL users
-      mysql_user: name={{ item.name }} password={{ item.password }} priv={{ item.db }}.*:ALL/test_{{ item.db }}.*:ALL
+      mysql_user: name={{ item.name }} password={{ item.password }} host=% priv={{ item.db }}.*:ALL/test_{{ item.db }}.*:ALL
       become: yes
       with_items:
           - { name: 'sql_explorer', db: 'hssonline', password: 'foo' }
